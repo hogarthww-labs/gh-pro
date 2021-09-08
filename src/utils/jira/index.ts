@@ -1,4 +1,4 @@
-import { Issue } from "./issue";
+import { IIssue } from "./issue";
 import dotenv from "dotenv";
 import JsBase64 from "js-base64";
 import request from "request";
@@ -55,7 +55,7 @@ export const storeJiraEnv = ({ jiraHost, username, basicAuthToken }: any) => {
   fs.writeFileSync("./.env", configFileContents);
 };
 
-export const branchNameFromJiraIssue = (issue: Issue) => {
+export const branchNameFromJiraIssue = (issue: IIssue) => {
   const { summary } = issue;
   // Use body.fields.summary as the branch name
   if (!summary) return;
