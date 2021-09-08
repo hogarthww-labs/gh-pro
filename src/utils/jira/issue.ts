@@ -1,6 +1,6 @@
-import JiraApi from "jira-client";
+import { JiraIssueApi } from "./issue-api";
 
-export const createIssue = async (jira: JiraApi, id: string) =>
+export const createIssue = async (jira: JiraIssueApi, id: string) =>
   await new Issue(jira, id).fetch();
 
 interface IFields {
@@ -14,11 +14,12 @@ export interface IIssue {
 }
 
 class Issue {
-  jira: JiraApi;
+  jira: JiraIssueApi;
   id: string;
+  typeName?: string;
   issue: any;
 
-  constructor(jira: JiraApi, id: string) {
+  constructor(jira: JiraIssueApi, id: string) {
     this.jira = jira;
     this.id = id;
   }
@@ -26,10 +27,39 @@ class Issue {
   async fetch() {
     const { jira, id } = this;
     this.issue = await jira.findIssue(id);
+    this.typeName = jira.findIssueTypeNameById(id);
   }
 
   get fields(): IFields {
     return this.issue.fields;
+  }
+
+  get project(): any {
+    return this.fields.project;
+  }
+
+  get subTasks(): any[] {
+    return this.fields["sub-tasks"];
+  }
+
+  get issueLinks(): any[] {
+    return this.fields.issueLinks;
+  }
+
+  get workLog(): any[] {
+    return this.fields.workLog;
+  }
+
+  get timeTracking(): any {
+    return this.fields.timeTracking;
+  }
+
+  get labels(): string[] {
+    return this.fields.labels;
+  }
+
+  get comments(): any[] {
+    return this.fields.comment;
   }
 
   get status(): string {

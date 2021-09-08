@@ -11,7 +11,8 @@ import * as utils from "./utils";
 
 const { Base64 } = JsBase64;
 
-export const loadEnv = () => dotenv.config();
+export const configPath = "./.jiraenv";
+export const loadEnv = () => dotenv.config({ path: configPath });
 
 let jiraTicket: any = null;
 
@@ -45,14 +46,14 @@ export const computeBasicAuthToken = (basicAuthToken: string) =>
 
 export const storeJiraEnv = ({ jiraHost, username, basicAuthToken }: any) => {
   // Persist settings to $HOME/.jirabrancher file
-  utils.debug(`Writing settings to .env`);
+  utils.debug(`Writing settings to {configPath}`);
   var configFileContents = [
     `JIRA_HOST=${jiraHost}`,
     `JIRA_USER=${username}`,
     `JIRA_BASICAUTH=${Base64.encode(basicAuthToken)}`,
     "",
   ].join(os.EOL);
-  fs.writeFileSync("./.env", configFileContents);
+  fs.writeFileSync(configPath, configFileContents);
 };
 
 export const branchNameFromJiraIssue = (issue: IIssue) => {
