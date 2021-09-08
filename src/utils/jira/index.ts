@@ -1,3 +1,4 @@
+import { Issue } from "./issue";
 import dotenv from "dotenv";
 import JsBase64 from "js-base64";
 import request from "request";
@@ -10,22 +11,9 @@ import * as utils from "./utils";
 
 const { Base64 } = JsBase64;
 
-var configPath = path.join(process.env.HOME || "~", ".jirabrancher");
-dotenv.config({ path: configPath });
+export const loadEnv = () => dotenv.config();
 
 let jiraTicket: any = null;
-const args = process.argv.slice(2);
-if (args.length === 1 && args[0].trim().length > 0) {
-  jiraTicket = args[0].trim();
-} else if (args.length === 0) {
-  // Parse JIRA ticket or ticket URL
-  jiraTicket = readlineSync
-    .question("Enter your JIRA ticket or ticket URL: ")
-    .trim();
-  jiraTicket = utils.parseJiraTicket(jiraTicket);
-} else {
-  throw new Error("Too many args specified");
-}
 
 // Gather JIRA host
 var jiraHost = process.env.JIRA_HOST;
@@ -43,55 +31,36 @@ if (!basicAuthToken) {
   if (!username) {
     username = readlineSync.question("Enter your JIRA username: ");
   }
+}
+
+export const retrieveJiraBasicAuthToken = (username: string) => {
   password = readlineSync.question("Enter your JIRA password: ", {
     hideEchoBack: true,
   });
   basicAuthToken = Base64.encode(`${username}:${password}`);
-}
-basicAuthToken = Base64.decode(basicAuthToken);
+};
 
-// Persist settings to $HOME/.jirabrancher file
-utils.debug(`Writing settings to config file (${configPath})`);
-var configFileContents = [
-  `JIRA_HOST=${jiraHost}`,
-  `JIRA_USER=${username}`,
-  `JIRA_BASICAUTH=${Base64.encode(basicAuthToken)}`,
-  "",
-].join(os.EOL);
-fs.writeFileSync(configPath, configFileContents);
+export const computeBasicAuthToken = (basicAuthToken: string) =>
+  Base64.decode(basicAuthToken);
 
-// If no Error above, continue assuming valid ticket
-utils.debug(`Looking up ${jiraTicket}...`);
+export const storeJiraEnv = ({ jiraHost, username, basicAuthToken }: any) => {
+  // Persist settings to $HOME/.jirabrancher file
+  utils.debug(`Writing settings to .env`);
+  var configFileContents = [
+    `JIRA_HOST=${jiraHost}`,
+    `JIRA_USER=${username}`,
+    `JIRA_BASICAUTH=${Base64.encode(basicAuthToken)}`,
+    "",
+  ].join(os.EOL);
+  fs.writeFileSync("./.env", configFileContents);
+};
 
-// GET https://jira.domain.com/rest/api/2/issue/<jiraTicket>
-request.get(
-  {
-    url: `https://${basicAuthToken}@${jiraHost}/rest/api/2/issue/${jiraTicket}`,
-    json: true,
-  },
-  function (err: any, resp: any, body: any) {
-    if (err) {
-      utils.debug(err);
-    } else if (resp.status >= 300) {
-      console.log(`Got unexpected status code: ${resp.status}`);
-    } else {
-      // Use body.fields.summary as the branch name
-      if (body && body.fields && body.fields.summary) {
-        let branch = utils.branchFromSummary(body.fields.summary);
-        branch = utils.addTicketPrefix(branch, jiraTicket);
-        branch = utils.truncateBranch(branch);
-
-        console.log("Use the following branch name:");
-        console.log(branch);
-        // TODO: copy to clipboard
-      } else if (body && body.errorMessages) {
-        console.log(body.errorMessages);
-      } else {
-        // TODO: automatically wipe that line
-        throw new Error(
-          `Error: HTTP ${resp.statusCode}, you probably need to delete the JIRA_BASICAUTH line from ${configPath}`
-        );
-      }
-    }
-  }
-);
+export const branchNameFromJiraIssue = (issue: Issue) => {
+  const { summary } = issue;
+  // Use body.fields.summary as the branch name
+  if (!summary) return;
+  let branch = utils.branchFromSummary(summary);
+  branch = utils.addTicketPrefix(branch, jiraTicket);
+  branch = utils.truncateBranch(branch);
+  return branch;
+};
