@@ -1,4 +1,4 @@
-import { JiraPrompter, getPrjEnv, savePrjEnv } from "./../utils";
+import { storeJiraEnv, JiraPrompter, getPrjEnv, savePrjEnv } from "./../utils";
 import {
   createIssue,
   branchNameFromJiraIssue,
@@ -53,13 +53,28 @@ export default class CreateBranch extends Command {
     await this.loadConfig();
 
     const jiraEnv = loadJiraEnv();
-    const prjEnv = getPrjEnv();
+    if (!jiraEnv.hostname) {
+      jiraEnv.hostname = this.prompter.promptHostName();
+    }
+    if (!jiraEnv.username) {
+      jiraEnv.username = this.prompter.promptUsername();
+    }
+
+    if (!jiraEnv.basicAuthToken) {
+      jiraEnv.basicAuthToken = this.prompter.retrieveJiraBasicAuthToken(
+        jiraEnv.username
+      );
+    }
+    storeJiraEnv(jiraEnv);
+
+    let prjEnv = getPrjEnv();
     if (!prjEnv || !prjEnv.issueId) {
       const issueId = this.prompter.promptIssueId();
       savePrjEnv({ issueId });
     }
+    prjEnv = getPrjEnv();
 
-    const { jiraIssueId } = getJiraIssueId();
+    const { jiraIssueId } = getJiraIssueId(prjEnv);
     const jira = createJiraApi(jiraEnv);
     const issue = await createIssue(jira, jiraIssueId);
     this.branchName = branchNameFromJiraIssue(issue);
