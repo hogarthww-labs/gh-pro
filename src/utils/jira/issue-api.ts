@@ -22,6 +22,36 @@ export class JiraIssueApi extends JiraApi {
     );
   }
 
+  findIssueMeta(issueNumber: string): any {
+    return this["doRequest"](
+      this["makeRequestHeader"](
+        this["makeUri"]({
+          pathname: `/issue/${issueNumber}/editmeta`,
+        })
+      )
+    );
+  }
+
+  findField(fieldsKv: any, name: string = "Epic Link"): any {
+    const keys = Object.keys(fieldsKv);
+    const key = keys.find((key: string) => {
+      const item = fieldsKv[key];
+      return item.name === name;
+    });
+    if (!key) {
+      throw `No ${name} field could be found in JIRA`;
+    }
+    const value = fieldsKv[key];
+    return { key, value };
+  }
+
+  async getEpicFieldName(issueNumber: string) {
+    const { key } = this.findField(issueNumber, "Epic Link");
+    const issue = await this.findIssue(issueNumber, undefined, key);
+    const result = this.findField(issue.fields, key);
+    return result.value;
+  }
+
   findIssueTypeNameById(issueNumber: string) {
     return this.findIssueTypeById(issueNumber).name;
   }
