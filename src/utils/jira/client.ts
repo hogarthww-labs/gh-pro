@@ -1,4 +1,6 @@
-import JiraApi from "jira-client";
+// import JiraApi from "jira-client";
+
+import { JiraIssueApi } from "./issue-api";
 
 interface JiraArgs {
   host?: string;
@@ -6,11 +8,7 @@ interface JiraArgs {
   password?: string;
 }
 
-export const createJiraApi = ({
-  host,
-  username,
-  password,
-}: JiraArgs): JiraApi => {
+export const createJiraApi = ({ host, username, password }: JiraArgs): any => {
   host = host || process.env.JIRA_HOST;
   username || process.env.JIRA_USER;
   password || process.env.JIRA_PASSWORD;
@@ -24,7 +22,7 @@ export const createJiraApi = ({
     throw "Missing JIRA password";
   }
 
-  return new JiraApi({
+  return new JiraIssueApi({
     protocol: "https",
     apiVersion: "2",
     host,

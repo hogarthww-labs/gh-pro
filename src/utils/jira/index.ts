@@ -1,18 +1,29 @@
-import { IIssue } from "./issue";
 import dotenv from "dotenv";
+
 import JsBase64 from "js-base64";
-import request from "request";
+
 import fs from "fs-extra";
+
 import os from "os";
-import path from "path";
+
 import readlineSync from "readline-sync";
 
+import { IIssue } from "./issue";
 import * as utils from "./utils";
 
 const { Base64 } = JsBase64;
 
 export const configPath = "./.jiraenv";
 export const loadEnv = () => dotenv.config({ path: configPath });
+
+export const loadJiraEnv = () => {
+  loadEnv();
+  return {
+    hostname: process.env.JIRA_HOST,
+    username: process.env.JIRA_USER,
+    basicAuthToken: process.env.JIRA_BASICAUTH,
+  };
+};
 
 let jiraTicket: any = null;
 
@@ -33,6 +44,16 @@ if (!basicAuthToken) {
     username = readlineSync.question("Enter your JIRA username: ");
   }
 }
+
+export const getJiraIssueId = (prjEnv?: any) => {
+  prjEnv = prjEnv || getPrjEnv();
+  return prjEnv.issueId;
+};
+
+export const getPrjEnv = () => {
+  const content = fs.readFileSync("./prjcache", "utf-8");
+  return JSON.parse(content);
+};
 
 export const retrieveJiraBasicAuthToken = (username: string) => {
   password = readlineSync.question("Enter your JIRA password: ", {

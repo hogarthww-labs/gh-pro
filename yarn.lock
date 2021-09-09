@@ -352,6 +352,14 @@
     "@types/through" "*"
     rxjs "^6.4.0"
 
+"@types/jira-client@^6.21.3":
+  version "6.21.3"
+  resolved "https://registry.yarnpkg.com/@types/jira-client/-/jira-client-6.21.3.tgz#a822f76354bdfaa908ad173a62e6f70bf14df7a5"
+  integrity sha512-j5jVMlTI1kwkFT/Sxoi3eLUhNg6X7EqH0TRthrpwlwjdIr81ehigXVJ7FMUH8/xY4I2TNwVQL0MqlemZonbNpA==
+  dependencies:
+    "@types/node" "*"
+    "@types/request" "*"
+
 "@types/json-schema@^7.0.3":
   version "7.0.9"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.9.tgz#97edc9037ea0c38585320b28964dde3b39e4660d"
@@ -397,7 +405,7 @@
   resolved "https://registry.yarnpkg.com/@types/readline-sync/-/readline-sync-1.4.4.tgz#8568292efe4ddd94d0ccee958b29cc3f4e0ea140"
   integrity sha512-cFjVIoiamX7U6zkO2VPvXyTxbFDdiRo902IarJuPVxBhpDnXhwSaVE86ip+SCuyWBbEioKCkT4C88RNTxBM1Dw==
 
-"@types/request@^2.48.7":
+"@types/request@*", "@types/request@^2.48.7":
   version "2.48.7"
   resolved "https://registry.yarnpkg.com/@types/request/-/request-2.48.7.tgz#a962d11a26e0d71d9a9913d96bb806dc4d4c2f19"
   integrity sha512-GWP9AZW7foLd4YQxyFZDBepl0lPsWLMEXDZUjQ/c1gqVPDPECrRZyEzuhJdnPWioFCq3Tv0qoGpMD6U+ygd4ZA==

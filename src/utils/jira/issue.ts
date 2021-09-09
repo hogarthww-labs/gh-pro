@@ -1,7 +1,9 @@
 import { JiraIssueApi } from "./issue-api";
 
-export const createIssue = async (jira: JiraIssueApi, id: string) =>
-  await new Issue(jira, id).fetch();
+export const createIssue = async (jira: JiraIssueApi, id: string) => {
+  const issue = new Issue(jira, id);
+  return await issue.fetch();
+};
 
 interface IFields {
   [key: string]: any;
@@ -28,6 +30,7 @@ class Issue {
     const { jira, id } = this;
     this.issue = await jira.findIssue(id);
     this.typeName = jira.findIssueTypeNameById(id);
+    return this;
   }
 
   get fields(): IFields {
