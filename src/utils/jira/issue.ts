@@ -9,10 +9,19 @@ interface IFields {
   [key: string]: any;
 }
 export interface IIssue {
+  id: string;
   status: string;
+  typeName?: string;
   summary: string;
   description: string;
   fields: IFields;
+  project: any;
+  workLog: any[];
+  subTasks: any[];
+  issueLinks: any[];
+  timeTracking: any;
+  labels: string[];
+  comments: any[];
 }
 
 class Issue {

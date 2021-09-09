@@ -1,17 +1,16 @@
+import { JiraPrompter, getPrjEnv, savePrjEnv } from "./../utils";
+import {
+  createIssue,
+  branchNameFromJiraIssue,
+  createJiraApi,
+  loadJiraEnv,
+  getJiraIssueId,
+} from "../utils";
 import { Command, flags } from "@oclif/command";
 
 import { cosmiconfig } from "cosmiconfig";
 
 import execa from "execa";
-
-import { createJiraApi } from "./../utils/jira/client";
-import {
-  getJiraIssueId,
-  loadJiraEnv,
-  branchNameFromJiraIssue,
-} from "./../utils/jira/index";
-import { createIssue } from "./../utils/jira/issue";
-
 interface IJiraIssueDetails {
   id?: string;
   type?: string;
@@ -46,10 +45,20 @@ export default class CreateBranch extends Command {
     this.config = config;
   }
 
+  get prompter() {
+    return new JiraPrompter();
+  }
+
   async run() {
     await this.loadConfig();
 
     const jiraEnv = loadJiraEnv();
+    const prjEnv = getPrjEnv();
+    if (!prjEnv || !prjEnv.issueId) {
+      const issueId = this.prompter.promptIssueId();
+      savePrjEnv({ issueId });
+    }
+
     const { jiraIssueId } = getJiraIssueId();
     const jira = createJiraApi(jiraEnv);
     const issue = await createIssue(jira, jiraIssueId);
