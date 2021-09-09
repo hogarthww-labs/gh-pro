@@ -32,24 +32,34 @@ export class JiraIssueApi extends JiraApi {
     );
   }
 
-  findField(fieldsKv: any, name: string = "Epic Link"): any {
+  findByName(fieldsKv: any, name: string = "Epic Link"): any {
     const keys = Object.keys(fieldsKv);
     const key = keys.find((key: string) => {
       const item = fieldsKv[key];
       return item.name === name;
     });
     if (!key) {
-      throw `No ${name} field could be found in JIRA`;
+      throw `No ${name} entry could be found`;
     }
     const value = fieldsKv[key];
     return { key, value };
   }
 
   async getEpicFieldName(issueNumber: string) {
-    const { key } = this.findField(issueNumber, "Epic Link");
+    const { key } = this.findByName(issueNumber, "Epic Link");
     const issue = await this.findIssue(issueNumber, undefined, key);
-    const result = this.findField(issue.fields, key);
+    const result = this.findByName(issue.fields, key);
     return result.value;
+  }
+
+  async setIssueStatus(issueId: string, status: string) {
+    const transitionsAvailable = await this.listTransitions(issueId);
+    const { value } = this.findByName(transitionsAvailable, status);
+    const { id } = value;
+    const issueTransition = {
+      id,
+    };
+    return await this.transitionIssue(issueId, issueTransition);
   }
 
   findIssueTypeNameById(issueNumber: string) {
