@@ -12,6 +12,7 @@ export interface IIssue {
   id: string;
   status: string;
   typeName?: string;
+  epicName?: string;
   summary: string;
   description: string;
   fields: IFields;
@@ -28,6 +29,7 @@ class Issue {
   jira: JiraIssueApi;
   id: string;
   typeName?: string;
+  epicName?: string;
   issue: any;
 
   constructor(jira: JiraIssueApi, id: string) {
@@ -38,7 +40,8 @@ class Issue {
   async fetch() {
     const { jira, id } = this;
     this.issue = await jira.findIssue(id);
-    this.typeName = jira.findIssueTypeNameById(id);
+    this.typeName = await jira.findIssueTypeNameById(id);
+    this.epicName = await jira.getEpicFieldName(id);
     return this;
   }
 

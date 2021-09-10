@@ -1,4 +1,6 @@
-var url = require("url");
+import url from "url";
+
+import { paramCase } from "change-case";
 
 export const debug = (msg: string) => {
   if (process.env.JB_DEBUG) {
@@ -12,6 +14,9 @@ export const parseJiraTicket = (jiraTicket: any) => {
     // parse URL
     let parsed = url.parse(jiraTicket);
     module.exports.debug(parsed.pathname);
+    if (!parsed || !parsed.pathname) {
+      throw "Missing or invalid JiraTicket";
+    }
     jiraTicket = parsed.pathname.replace("/browse/", "");
     return jiraTicket;
   } else if (jiraTicket.indexOf("-") < 1) {
@@ -23,23 +28,7 @@ export const parseJiraTicket = (jiraTicket: any) => {
 };
 
 export const branchFromSummary = (summary: string) => {
-  // Replace non-alphanumeric chars with dashes
-  let ret = summary.replace(/[^A-Za-z0-9]/g, "-");
-
-  // Remove duplicate dashes
-  ret = ret.replace(/-+/g, "-");
-
-  // Chomp the leading dash if it's there
-  if (ret.charAt(0) === "-" && ret.length > 1) {
-    ret = ret.substring(1, ret.length);
-  }
-
-  // Chomp the trailing dash if it's there
-  if (ret.slice(-1) === "-") {
-    ret = ret.substring(0, ret.length - 1);
-  }
-
-  return ret;
+  return paramCase(summary);
 };
 
 export const addTicketPrefix = (branch: string, ticket: string) => {
