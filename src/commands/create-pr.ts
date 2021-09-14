@@ -19,8 +19,8 @@ export default class CreatePr extends Command {
   static description = "describe the command here";
 
   static examples = [
-    `$ gh-pr --title "add tabs" --jira 1234`,
-    `$ gh-pr -t "add tabs" -j 1234`,
+    `$ gh-pr pr --title "add tabs" --jira 1234`,
+    `$ gh-pr pr -t "add tabs" -j 1234`,
   ];
 
   static flags = {
@@ -35,8 +35,8 @@ export default class CreatePr extends Command {
     // flag with a value (-j, --jira=ZN-1234)
     labels: flags.string({ char: "l", description: "Labels" }),
     // flag with no value (-d, --draft)
-    draft: flags.boolean({ char: "d" }),
-    web: flags.boolean({ char: "w" }),
+    draft: flags.boolean({ char: "d", description: "Draft" }),
+    web: flags.boolean({ char: "w", description: "Open PR in web browser" }),
   };
 
   // static args = [
@@ -131,6 +131,10 @@ export default class CreatePr extends Command {
     return await cli.confirm("Open PR in web browser");
   }
 
+  async promptDraft() {
+    return await cli.confirm("Draft");
+  }
+
   async loadConfig() {
     const explorer = cosmiconfig("gh-pro");
     const result = await explorer.search();
@@ -212,6 +216,7 @@ export default class CreatePr extends Command {
     this.reviewers =
       this.parseReviewers(flags.reviewers) && (await this.promptReviewers());
     this.labels = this.parseLabels(flags.labels) && (await this.promptLabels());
+    this.draft = await this.promptDraft();
     this.web = flags.web && (await this.promptWeb());
 
     await this.createPr();

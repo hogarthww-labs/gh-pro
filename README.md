@@ -1,7 +1,31 @@
-gh-pro
-======
+# gh-pro
 
-Github PRs for Zonza
+Git Pro is a CLI that facilitates working with Git, Github and JIRA from the terminal so the developer can stay focused and avoid context switching to different applications.
+
+## createJiraIssueApi
+
+Create JIRA Issue API
+
+```ts
+import { createJiraIssueApi } from "gh-pro";
+const api = createJiraIssueApi({
+    host,
+    username,
+    password,
+})
+```
+
+## setIssueStatus
+
+Set JIRA Issue Status
+
+```ts
+api.setIssueStatus("ZN-1234", "Development")
+```
+
+## Create Github PR
+
+Create Github PR
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/gh-pro.svg)](https://npmjs.org/package/gh-pro)
@@ -12,7 +36,7 @@ Github PRs for Zonza
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
-# Usage
+## Usage
 <!-- usage -->
 ```sh-session
 $ npm install -g gh-pro
@@ -26,27 +50,38 @@ USAGE
 ...
 ```
 <!-- usagestop -->
-# Commands
+### Commands
 <!-- commands -->
-* [`gh-pr hello [FILE]`](#gh-pr-hello-file)
-* [`gh-pr help [COMMAND]`](#gh-pr-help-command)
+* [`gh-pr pr`](#gh-pr-pr)
+* [`gh-pr branch`](#gh-pr-branch)
 
-## `gh-pr hello [FILE]`
+## `gh-pr pr`
 
-describe the command here
+Create a standardised Github PR
 
-```
+```bash
 USAGE
-  $ gh-pr hello [FILE]
+  $ gh-pr pr
 
 OPTIONS
   -f, --force
   -h, --help       show CLI help
-  -n, --name=name  name to print
+  -t, --title=title  title of PR
+  -j, --jira=jira JIRA issue ID
+  -r, --reviewers=iwo,lukasz List of PR reviewers
+  -l, --labels=fix,api PR labels
+  -d, --draft Draft PR
+  -w, --web Open PR in web browser
 
 EXAMPLE
-  $ gh-pr hello
-  hello world from ./src/hello.ts!
+  $ gh-pr pr
+  > Title?
+  > Description?
+  > JIRA Id [ZN-XXXX]?
+  > Reviewers?
+  > Labels?
+  > Draft?
+  > Open PR in web browser?
 ```
 
 _See code: [src/commands/hello.ts](https://github.com/hogarthww-labs/gh-pro/blob/v0.0.0/src/commands/hello.ts)_
@@ -55,7 +90,7 @@ _See code: [src/commands/hello.ts](https://github.com/hogarthww-labs/gh-pro/blob
 
 display help for gh-pr
 
-```
+```bash
 USAGE
   $ gh-pr help [COMMAND]
 

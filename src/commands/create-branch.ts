@@ -1,3 +1,9 @@
+import { Command, flags } from "@oclif/command";
+
+import { cosmiconfig } from "cosmiconfig";
+
+import execa from "execa";
+
 import { storeJiraEnv, JiraPrompter, getPrjEnv, savePrjEnv } from "./../utils";
 import {
   createIssue,
@@ -6,11 +12,6 @@ import {
   loadJiraEnv,
   getJiraIssueId,
 } from "../utils";
-import { Command, flags } from "@oclif/command";
-
-import { cosmiconfig } from "cosmiconfig";
-
-import execa from "execa";
 interface IJiraIssueDetails {
   id?: string;
   type?: string;
@@ -23,15 +24,15 @@ export default class CreateBranch extends Command {
 
   static flags = {
     help: flags.help({ char: "h" }),
+    // name: flags.help({ char: "n", description: "name of branch" }),
   };
 
   branchName?: string;
   jiraIssue: IJiraIssueDetails = {};
 
   async createBranch() {
-    const args = [];
+    // const args = [];
     const { branchName } = this;
-
     const { stdout } = await execa(`git branch ${branchName}`);
     this.log(stdout);
   }
