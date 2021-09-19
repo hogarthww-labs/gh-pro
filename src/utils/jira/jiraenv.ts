@@ -22,7 +22,8 @@ interface IJiraEnv {
 }
 
 export const loadJiraEnv = (): IJiraEnv => {
-  const loadedEnv = loadEnv();
+  let loadedEnv = loadEnv() as any;
+  delete loadedEnv["password"];
   const processEnvObj = {
     hostname: process.env.JIRA_HOST,
     username: process.env.JIRA_USER,

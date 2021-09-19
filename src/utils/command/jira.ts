@@ -1,9 +1,8 @@
-import { Command, flags } from "@oclif/command";
+import { Command } from "@oclif/command";
 
-import { cosmiconfig } from "cosmiconfig";
-
-import { IIssue } from "./../jira/issue";
-import { JiraIssueApi } from "./../jira/issue-api";
+import { loadConfig } from "../config";
+import { IIssue } from "../jira/issue";
+import { JiraIssueApi } from "../jira/issue-api";
 
 import {
   storeJiraEnv,
@@ -16,32 +15,28 @@ import {
   getJiraIssueId,
 } from "..";
 
-interface IJiraIssueDetails {
+export interface IJiraIssueDetails {
   id?: string;
   type?: string;
   summary?: string;
 }
 
-export default class JiraCommand extends Command {
+interface IAppConfig {
+  [key: string]: any;
+}
+
+export class JiraCommand extends Command {
   jiraIssue: IJiraIssueDetails = {};
   issue?: IIssue;
   api?: JiraIssueApi;
-
-  async loadConfig() {
-    const explorer = cosmiconfig("gh-pro");
-    const result = await explorer.search();
-    if (!result) return;
-    const { config } = result;
-    if (!config) return;
-    this.config = config;
-  }
+  appConfig: IAppConfig = {};
 
   get prompter() {
     return new JiraPrompter();
   }
 
   async run() {
-    await this.loadConfig();
+    this.appConfig = loadConfig();
     const jiraEnv = loadJiraEnv();
     if (!jiraEnv.hostname) {
       jiraEnv.hostname = this.prompter.promptHostName();

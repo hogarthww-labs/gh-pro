@@ -50,11 +50,12 @@ export class JiraIssueApi extends JiraApi {
     );
   }
 
-  findByName(fieldsKv: any, name: string = "Epic Link"): any {
+  // search for case insensitive match
+  findByName(fieldsKv: any, name: string): any {
     const keys = Object.keys(fieldsKv);
     const key = keys.find((key: string) => {
       const item = fieldsKv[key];
-      return item.name === name;
+      return item.name.toLowerCase() === name.toLowerCase();
     });
     if (!key) {
       throw `No ${name} entry could be found`;

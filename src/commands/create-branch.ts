@@ -4,15 +4,13 @@ import { cosmiconfig } from "cosmiconfig";
 
 import execa from "execa";
 
-import { JiraPrompter } from "./../utils";
-import { branchNameFromJiraIssue } from "../utils";
-import JiraCommand from "../utils/command/JiraCommand";
-import { IIssue } from "./../utils/jira/issue";
-interface IJiraIssueDetails {
-  id?: string;
-  type?: string;
-  summary?: string;
-}
+import {
+  IJiraIssueDetails,
+  JiraCommand,
+  IIssue,
+  createBranchName,
+  JiraPrompter,
+} from "../utils";
 export default class CreateBranch extends JiraCommand {
   static description = "create branch";
 
@@ -33,23 +31,20 @@ export default class CreateBranch extends JiraCommand {
     this.log(stdout);
   }
 
-  async loadConfig() {
-    const explorer = cosmiconfig("gh-pro");
-    const result = await explorer.search();
-    if (!result) return;
-    const { config } = result;
-    if (!config) return;
-    this.config = config;
-  }
-
   get prompter() {
     return new JiraPrompter();
+  }
+
+  branchNameFromJiraIssue(issue: IIssue) {
+    const { branchParts } = this.appConfig;
+    const branchName = createBranchName(issue, branchParts);
+    return branchName.fromJiraIssue();
   }
 
   async run() {
     await super.run();
 
-    this.branchName = branchNameFromJiraIssue(this.issue as IIssue);
+    this.branchName = this.branchNameFromJiraIssue(this.issue as IIssue);
 
     await this.createBranch();
 

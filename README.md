@@ -76,8 +76,6 @@ EXAMPLE
   > Open PR in web browser?
 ```
 
-_See code: [src/commands/create-pr.ts](https://github.hogarthww.com/lab-experiments/github-pro/blob/v0.0.0/src/commands/create-pr.ts)_
-
 ## Create Git branch
 
 Create a standardised Git branch linked to JIRA ticket
@@ -119,7 +117,7 @@ The command will then fetch the following JIRA issue details:
 * Issue ID
 * Summary
 
-The branch name will be generated from this data as follows
+The branch name will by default be generated from this data as follows
 
 `<Issue ID>/<epic name>/<Summary dashified>`
 
@@ -127,7 +125,36 @@ Example:
 
 `ZN-1234/Featured-Collections/add-collection-to-parent`
 
-_See code: [src/commands/create-branch.ts](https://github.hogarthww.com/lab-experiments/github-pro/blob/v0.0.0/src/commands/create-pr.ts)_
+### Customize branch name convention
+
+You can set the `branchParts` array in [cosmiconfig](https://www.npmjs.com/package/cosmiconfig) `gh-pro` configuration to customize which parts go into the branch name.
+
+The available parts are:
+
+* `id` JIRA Issue ID
+* `epic` Epic name issue belongs to (camel case)
+* `type` type name of issue
+* `summary` summary of issue (dasherized)
+
+`.gh-prorc`
+
+```json
+{
+  "branchParts": [
+    "id",
+    "epic",
+    "type",
+    "summary"
+  ],
+  "statusList": [
+    "Development",
+    "E2E Testing",
+    "Manual Testing",
+    "Development Completed",
+    "Completed"
+  ]
+}
+```
 
 ## Udate JIRA issue status
 
@@ -146,7 +173,7 @@ OPTIONS
   -h, --help       show CLI help
 
 EXAMPLE
-  $ gh-pr create-branch
+  $ gh-pr update-status
   > Enter your JIRA host (e.g.: jira.domain.com):
   > Enter your JIRA username:
   > Enter your JIRA password:  
@@ -166,7 +193,9 @@ If JIRA status is not passed as argument
 - Completed
 ```
 
-If you have set a list of allowed status in `statusList` of JiraEnv
+If you have set a list of allowed status in [cosmiconfig](https://www.npmjs.com/package/cosmiconfig) `gh-pro` configuration
+
+`.gh-prorc`
 
 ```json
 {
@@ -207,8 +236,6 @@ ARGUMENTS
 OPTIONS
   --all  see all commands in CLI
 ```
-
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.3/src/commands/help.ts)_
 
 ## createJiraIssueApi
 

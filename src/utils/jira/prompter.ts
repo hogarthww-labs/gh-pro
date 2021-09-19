@@ -1,5 +1,8 @@
 import readlineSync from "readline-sync";
+
 import { Base64 } from "js-base64";
+
+import { encodeBasicAuthToken } from "./jiraenv";
 
 export class JiraPrompter {
   promptText(text: string): string {
@@ -28,7 +31,7 @@ export class JiraPrompter {
 
   retrieveJiraBasicAuthToken = (username: string) => {
     const password = this.promptPassword();
-    return Base64.encode(`${username}:${password}`);
+    return encodeBasicAuthToken({ username, password });
   };
 
   get jiraQuestions() {

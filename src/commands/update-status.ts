@@ -1,15 +1,10 @@
+import { IJiraIssueDetails } from "./../utils/command/jira";
 import { flags } from "@oclif/command";
 
 import cli from "cli-ux";
 
-import { loadJiraEnv, IIssue, JiraIssueApi } from "./../utils";
-import JiraCommand from "../utils/command/JiraCommand";
-
-interface IJiraIssueDetails {
-  id?: string;
-  type?: string;
-  summary?: string;
-}
+import { loadConfig, IIssue, JiraIssueApi } from "./../utils";
+import { JiraCommand } from "../utils/command/jira";
 export default class UpdateStatus extends JiraCommand {
   static description = "update JIRA issue status";
   static examples = [`$ gh-pro update-status Development`];
@@ -33,7 +28,7 @@ export default class UpdateStatus extends JiraCommand {
   static defaultIssueStatusOptions = [["Development", "Completed"]];
 
   static loadOptions() {
-    return loadJiraEnv().statusList || [];
+    return loadConfig().statusList || [];
   }
 
   status: string = "Development";

@@ -26,15 +26,3 @@ export const parseJiraTicket = (jiraTicket: any) => {
     return jiraTicket;
   }
 };
-
-export const branchFromSummary = (summary: string) => {
-  return paramCase(summary);
-};
-
-export const addTicketPrefix = (branch: string, ticket: string) => {
-  return ticket + "/" + branch;
-};
-
-export const truncateBranch = (branch: string) => {
-  return branch.substring(0, 64);
-};
