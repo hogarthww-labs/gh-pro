@@ -4,23 +4,19 @@ import { cosmiconfig } from "cosmiconfig";
 
 import execa from "execa";
 
-import { storeJiraEnv, JiraPrompter, getPrjEnv, savePrjEnv } from "./../utils";
-import {
-  createIssue,
-  branchNameFromJiraIssue,
-  createJiraApi,
-  loadJiraEnv,
-  getJiraIssueId,
-} from "../utils";
+import { JiraPrompter } from "./../utils";
+import { branchNameFromJiraIssue } from "../utils";
+import JiraCommand from "../utils/command/JiraCommand";
+import { IIssue } from "./../utils/jira/issue";
 interface IJiraIssueDetails {
   id?: string;
   type?: string;
   summary?: string;
 }
-export default class CreateBranch extends Command {
+export default class CreateBranch extends JiraCommand {
   static description = "create branch";
 
-  static examples = [`$ gh-pro branch`];
+  static examples = [`$ gh-pro create-branch`];
 
   static flags = {
     help: flags.help({ char: "h" }),
@@ -51,34 +47,9 @@ export default class CreateBranch extends Command {
   }
 
   async run() {
-    await this.loadConfig();
+    await super.run();
 
-    const jiraEnv = loadJiraEnv();
-    if (!jiraEnv.hostname) {
-      jiraEnv.hostname = this.prompter.promptHostName();
-    }
-    if (!jiraEnv.username) {
-      jiraEnv.username = this.prompter.promptUsername();
-    }
-
-    if (!jiraEnv.basicAuthToken) {
-      jiraEnv.basicAuthToken = this.prompter.retrieveJiraBasicAuthToken(
-        jiraEnv.username
-      );
-    }
-    storeJiraEnv(jiraEnv);
-
-    let prjEnv = getPrjEnv();
-    if (!prjEnv || !prjEnv.issueId) {
-      const issueId = this.prompter.promptIssueId();
-      savePrjEnv({ issueId });
-    }
-    prjEnv = getPrjEnv();
-
-    const { jiraIssueId } = getJiraIssueId(prjEnv);
-    const jira = createJiraApi(jiraEnv);
-    const issue = await createIssue(jira, jiraIssueId);
-    this.branchName = branchNameFromJiraIssue(issue);
+    this.branchName = branchNameFromJiraIssue(this.issue as IIssue);
 
     await this.createBranch();
 

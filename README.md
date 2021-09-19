@@ -115,9 +115,9 @@ If Jira issue has been entered it will prompt if you want to confirm to continue
 
 The command will then fetch the following JIRA issue details:
 
-- Epic name
-- Issue ID
-- Summary
+* Epic name
+* Issue ID
+* Summary
 
 The branch name will be generated from this data as follows
 
@@ -128,6 +128,70 @@ Example:
 `ZN-1234/Featured-Collections/add-collection-to-parent`
 
 _See code: [src/commands/create-branch.ts](https://github.hogarthww.com/lab-experiments/github-pro/blob/v0.0.0/src/commands/create-pr.ts)_
+
+## Udate JIRA issue status
+
+Update a JIRA issue with a new status
+
+`gh-pr update-status Development`
+
+If Jira credentials have not yet been entered and saved locally
+
+```bash
+USAGE
+  $ gh-pr update-status
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+
+EXAMPLE
+  $ gh-pr create-branch
+  > Enter your JIRA host (e.g.: jira.domain.com):
+  > Enter your JIRA username:
+  > Enter your JIRA password:  
+```
+
+If JIRA issue ID has not been entered
+
+```bash
+> Enter current JIRA issue ID:
+```
+
+If JIRA status is not passed as argument
+
+```bash
+> JIRA status:
+- Development
+- Completed
+```
+
+If you have set a list of allowed status in `statusList` of JiraEnv
+
+```json
+{
+  "statusList": [
+    "Development",
+    "E2E Testing",
+    "Manual Testing",
+    "Development Completed",
+    "Completed"
+  ]
+}
+```
+
+Then the status prompt will load the allowed options from Jira Env
+
+```bash
+> JIRA status:
+- Development
+- E2E Testing
+- Manual Testing
+- Development Completed
+- Completed
+```
+
+The prompt will then validate that what is entered for the status matches an entry in the list
 
 ## `gh-pr help [COMMAND]`
 

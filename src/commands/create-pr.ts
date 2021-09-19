@@ -19,8 +19,8 @@ export default class CreatePr extends Command {
   static description = "describe the command here";
 
   static examples = [
-    `$ gh-pr pr --title "add tabs" --jira 1234`,
-    `$ gh-pr pr -t "add tabs" -j 1234`,
+    `$ gh-pr create-pr --title "add tabs" --jira 1234`,
+    `$ gh-pr create-pr -t "add tabs" -j 1234`,
   ];
 
   static flags = {
