@@ -1,10 +1,9 @@
+import * as inquirer from "inquirer";
 import { IJiraIssueDetails } from "./../utils/command/jira";
 import { flags } from "@oclif/command";
-
-import cli from "cli-ux";
-
 import { loadConfig, IIssue, JiraIssueApi } from "./../utils";
 import { JiraCommand } from "../utils/command/jira";
+import * as Config from "@oclif/config";
 export default class UpdateStatus extends JiraCommand {
   static description = "update JIRA issue status";
   static examples = [`$ gh-pro update-status Development`];
@@ -33,9 +32,22 @@ export default class UpdateStatus extends JiraCommand {
 
   status: string = "Development";
   jiraIssue: IJiraIssueDetails = {};
+  statusList: string[];
+
+  constructor(argv: string[], config: Config.IConfig) {
+    super(argv, config);
+    this.statusList = loadConfig().statusList;
+  }
 
   async promptStatus() {
-    return await cli.prompt("Issue status");
+    return await inquirer.prompt([
+      {
+        name: "status",
+        message: "Issue status",
+        type: "list",
+        choices: this.statusList,
+      },
+    ]);
   }
 
   async updateStatus() {
@@ -49,7 +61,8 @@ export default class UpdateStatus extends JiraCommand {
 
   async run() {
     await super.run();
-    this.status = await this.promptStatus();
+    const answers = await this.promptStatus();
+    this.status = answers.status;
     await this.updateStatus();
   }
 }
